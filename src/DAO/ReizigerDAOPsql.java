@@ -1,3 +1,8 @@
+package DAO;
+
+import Domein.OVChipkaart;
+import Domein.Reiziger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +13,7 @@ import java.util.List;
 public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection conn;
     private AdresDAO adao;
+    private OVChipkaartDAO odao;
 
     public ReizigerDAOPsql(Connection conn) {
         this.conn = conn;
@@ -16,6 +22,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     public void setAdao(AdresDAO adao) {
         this.adao = adao;
     }
+
+    public void setOdao(OVChipkaartDAO odao) {this.odao = odao;}
 
     @Override
     public boolean save(Reiziger reiziger) {
@@ -41,7 +49,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         try {
             String q = "UPDATE reiziger " +
                     "SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = TO_DATE(?, 'yyyy-mm-dd') " +
-                    "WHERE reiziger_id=?";
+                    "WHERE reiziger_id=?;";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setInt(5, reiziger.getId());
             pst.setString(1, reiziger.getVoorletters());
@@ -59,7 +67,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     @Override
     public boolean delete(Reiziger reiziger) {
         try {
-            String q = "DELETE FROM reiziger WHERE reiziger_id=?";
+            String q = "DELETE FROM reiziger WHERE reiziger_id=?;";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setInt(1, reiziger.getId());
             pst.executeUpdate();
@@ -73,13 +81,14 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     @Override
     public Reiziger findById(int id) throws Exception {
         try {
-            String q = "SELECT * FROM reiziger WHERE reiziger_id=?";
+            String q = "SELECT * FROM reiziger WHERE reiziger_id=?;";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 Reiziger r1 = new Reiziger(rs.getInt("reiziger_id"),rs.getString("voorletters"),rs.getString("tussenvoegsel")+" ",rs.getString("achternaam"),java.sql.Date.valueOf(rs.getString("geboortedatum")));
                 r1.setAdres(adao.findByReiziger(r1));
+                r1.setKaarten(odao.findByReiziger(r1));
                 if (rs.next()) {
                     System.out.println(rs);
                     System.out.println(rs.getInt("reiziger_id"));
@@ -97,7 +106,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     @Override
     public List<Reiziger> findByGbdatum(String datum) {
         try {
-            String q = "SELECT * FROM reiziger WHERE geboortedatum=TO_DATE(?, 'yyyy,mm,dd')";
+            String q = "SELECT * FROM reiziger WHERE geboortedatum=TO_DATE(?, 'yyyy,mm,dd');";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setString(1, datum);
             ResultSet rs = pst.executeQuery();
@@ -105,6 +114,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             while (rs.next()) {
                 Reiziger r1 = new Reiziger(rs.getInt("reiziger_id"),rs.getString("voorletters"),rs.getString("tussenvoegsel")+" ",rs.getString("achternaam"),java.sql.Date.valueOf(rs.getString("geboortedatum")));
                 r1.setAdres(adao.findByReiziger(r1));
+                r1.setKaarten(odao.findByReiziger(r1));
                 lr.add(r1);
             }
             return lr;
@@ -126,6 +136,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             while (rs.next()) {
                 Reiziger r1 = new Reiziger(rs.getInt("reiziger_id"),rs.getString("voorletters"),rs.getString("tussenvoegsel")+" ",rs.getString("achternaam"),java.sql.Date.valueOf(rs.getString("geboortedatum")));
                 r1.setAdres(adao.findByReiziger(r1));
+                r1.setKaarten(odao.findByReiziger(r1));
                 lr.add(r1);
             }
             return lr;

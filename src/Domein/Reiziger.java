@@ -1,5 +1,8 @@
-import java.time.LocalDate;
+package Domein;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Reiziger {
     private int id;
@@ -8,6 +11,7 @@ public class Reiziger {
     private String achternaam;
     private Date geboortedatum;
     private Adres adres;
+    private List<OVChipkaart> kaarten = new ArrayList<>();
 
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
         this.id = id;
@@ -65,6 +69,22 @@ public class Reiziger {
         this.adres = adres;
     }
 
+    public List<OVChipkaart> getKaarten() {
+        return kaarten;
+    }
+
+    public void setKaarten(List<OVChipkaart> kaarten) {
+        if (kaarten != null) {
+            this.kaarten = kaarten;
+        }
+    }
+
+    public void addKaart(OVChipkaart kaart) {
+        if (!kaarten.contains(kaart)) {
+            kaarten.add(kaart);
+        }
+    }
+
     public String getNaam() {
         if (tussenvoegsel.isBlank()||tussenvoegsel.isEmpty()||tussenvoegsel.contains("null")) {
             return voorletters+". "+achternaam;
@@ -74,9 +94,13 @@ public class Reiziger {
 
     @Override
     public String toString() {
-        return "#" + id +
+        String fullString = "#" + id +
                 ": " + getNaam() +
-                " (" + geboortedatum + "), " +
+                " (" + geboortedatum + "), Adres " +
                 adres;
+        for (OVChipkaart kaart : kaarten) {
+            fullString += "; " + kaart;
+        }
+        return fullString;
     }
 }

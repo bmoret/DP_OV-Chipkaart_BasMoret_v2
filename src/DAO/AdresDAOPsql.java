@@ -1,3 +1,8 @@
+package DAO;
+
+import Domein.Adres;
+import Domein.Reiziger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,14 +26,14 @@ public class AdresDAOPsql implements AdresDAO{
     public boolean save(Adres adres) {
         try {
             String q = "INSERT INTO adres (adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id)\n" +
-                    "VALUES (?,?,?,?,?,?)";
+                    "VALUES (?,?,?,?,?,?);";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setInt(1, adres.getAdres_id());
             pst.setString(2, adres.getPostcode());
             pst.setString(3, adres.getHuisnummer());
             pst.setString(4, adres.getStraat());
             pst.setString(5, adres.getWoonplaats());
-            pst.setInt(6, adres.getReiziger_id());
+            pst.setInt(6, adres.getReiziger().getId());
             pst.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -42,14 +47,14 @@ public class AdresDAOPsql implements AdresDAO{
         try {
             String q = "UPDATE adres " +
                     "SET postcode = ?, huisnummer = ?, straat = ?, woonplaats = ?, reiziger_id = ?" +
-                    "WHERE adres_id=?";
+                    "WHERE adres_id=?;";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setInt(6, adres.getAdres_id());
             pst.setString(1, adres.getPostcode());
             pst.setString(2, adres.getHuisnummer());
             pst.setString(3, adres.getStraat());
             pst.setString(4, adres.getWoonplaats());
-            pst.setInt(5, adres.getReiziger_id());
+            pst.setInt(5, adres.getReiziger().getId());
             pst.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -61,7 +66,7 @@ public class AdresDAOPsql implements AdresDAO{
     @Override
     public boolean delete(Adres adres) {
         try {
-            String q = "DELETE FROM adres WHERE adres_id=?";
+            String q = "DELETE FROM adres WHERE adres_id=?;";
             PreparedStatement pst = conn.prepareStatement(q);
             pst.setInt(1, adres.getAdres_id());
             pst.executeUpdate();
@@ -75,11 +80,12 @@ public class AdresDAOPsql implements AdresDAO{
     @Override
     public Adres findByReiziger(Reiziger reiziger) throws Exception {
         try {
-            String q = "SELECT * FROM adres WHERE reiziger_id = "+reiziger.getId();
+            String q = "SELECT * FROM adres WHERE reiziger_id = ?;";
             PreparedStatement pst = conn.prepareStatement(q);
+            pst.setInt(1,reiziger.getId());
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                Adres a1 = new Adres(rs.getInt("adres_id"),rs.getString("postcode"),rs.getString("huisnummer"),rs.getString("straat"),rs.getString("woonplaats"),rs.getInt("reiziger_id"));
+                Adres a1 = new Adres(rs.getInt("adres_id"),rs.getString("postcode"),rs.getString("huisnummer"),rs.getString("straat"),rs.getString("woonplaats"),reiziger);
 
                 if (rs.next()) {
                     System.out.println(rs);
@@ -97,16 +103,16 @@ public class AdresDAOPsql implements AdresDAO{
     @Override
     public List<Adres> findAll() {
         try {
-            String q = "SELECT * FROM adres";
+            String q = "SELECT * FROM adres;";
             PreparedStatement pst = conn.prepareStatement(q);
             ResultSet rs = pst.executeQuery();
             List<Adres> la = new ArrayList<>();
             while (rs.next()) {
-                Adres a1 = new Adres(rs.getInt("adres_id"),rs.getString("postcode"),rs.getString("huisnummer"),rs.getString("straat"),rs.getString("woonplaats"),rs.getInt("reiziger_id"));
+                Adres a1 = new Adres(rs.getInt("adres_id"),rs.getString("postcode"),rs.getString("huisnummer"),rs.getString("straat"),rs.getString("woonplaats"),rdao.findById(rs.getInt("reiziger_id")));
                 la.add(a1);
             }
             return la;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return null;

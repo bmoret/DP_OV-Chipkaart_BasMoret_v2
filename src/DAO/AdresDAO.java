@@ -1,3 +1,8 @@
+package DAO;
+
+import Domein.Adres;
+import Domein.Reiziger;
+
 import java.util.List;
 
 public interface AdresDAO {
