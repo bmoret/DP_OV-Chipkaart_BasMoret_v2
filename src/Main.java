@@ -147,6 +147,14 @@ public class Main{
     private static void testOVChipkaartDAO(OVChipkaartDAO odao, ReizigerDAO rdao) throws Exception {
         System.out.println("\n---------- Test OVChipkaartDAO -------------");
 
+        // Ophalen alle kaarten
+        List<OVChipkaart> allKaarten = odao.findAll();
+        System.out.println("[Test] OVChipkaartDAO.findAll() geeft de volgende kaarten:");
+        for (OVChipkaart kaart : allKaarten) {
+            System.out.println(kaart);
+        }
+        System.out.println();
+
         // Ophalen kaarten eigenaar
         Reiziger r1 = rdao.findById(2);
 
@@ -168,9 +176,9 @@ public class Main{
         // Update een bestaande kaart + vindt deze kaart met kaart nummer
         OVChipkaart k1Update = new OVChipkaart(99999,5,2,java.sql.Date.valueOf("2022-09-10"),r1);
         try {
-            System.out.print("[Test] Saldo is eerst " + odao.findByKaartNummer(k1).getSaldo() + ". Adres is na AdresDAO.update ");
+            System.out.print("[Test] Saldo is eerst " + odao.findByKaartNummer(k1.getKaartNummer()).getSaldo() + ". Adres is na AdresDAO.update ");
             odao.update(k1Update);
-            System.out.println(odao.findByKaartNummer(k1).getSaldo() + "\n");
+            System.out.println(odao.findByKaartNummer(k1.getKaartNummer()).getSaldo() + "\n");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

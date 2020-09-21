@@ -1,12 +1,15 @@
 package Domein;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OVChipkaart {
     private int kaartNummer, klasse;
     private double saldo;
     private Date geldigTot;
     private Reiziger reiziger;
+    private List<Product> producten = new ArrayList<>();
 
     public OVChipkaart (int kaartNummer, double saldo, int klasse, Date geldigTot, Reiziger reiziger) throws Exception {
         this.kaartNummer = kaartNummer;
@@ -58,6 +61,14 @@ public class OVChipkaart {
 
     public void setReiziger(Reiziger reiziger) {
         this.reiziger = reiziger;
+    }
+
+    public List<Product> getProducten() {
+        return producten;
+    }
+
+    public void setProducten(List<Product> producten) {
+        this.producten = producten;
     }
 
     @Override
