@@ -183,7 +183,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     public List<OVChipkaart> findAll() {
         List<OVChipkaart> kaarten = new ArrayList<>();
         for (Reiziger reiziger : rdao.findAll()) {
-            List<OVChipkaart> kaartenReiziger = findByReiziger(reiziger);
+            List<OVChipkaart> kaartenReiziger = reiziger.getKaarten();
             if (kaartenReiziger != null) {
                 kaarten.addAll(kaartenReiziger);
             }
