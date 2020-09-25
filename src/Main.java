@@ -1,6 +1,11 @@
 import DAO.*;
+import DAOInterfaces.AdresDAO;
+import DAOInterfaces.OVChipkaartDAO;
+import DAOInterfaces.ProductDAO;
+import DAOInterfaces.ReizigerDAO;
 import Domein.Adres;
 import Domein.OVChipkaart;
+import Domein.Product;
 import Domein.Reiziger;
 
 import java.sql.*;
@@ -17,13 +22,18 @@ public class Main{
         ReizigerDAOPsql rds = new ReizigerDAOPsql(myConn);
         AdresDAOPsql ads = new AdresDAOPsql(myConn);
         OVChipkaartDAOPsql ods = new OVChipkaartDAOPsql(myConn);
+        ProductDAOPsql pds = new ProductDAOPsql(myConn);
         rds.setAdao(ads);
         rds.setOdao(ods);
         ads.setRdao(rds);
         ods.setRdao(rds);
+        ods.setPdao(pds);
+        pds.setOdao(ods);
         testReizigerDAO(rds);
         testAdresDAO(ads,rds);
         testOVChipkaartDAO(ods,rds);
+        testProducten(pds);
+
 
         myConn.close();
     }
@@ -197,6 +207,57 @@ public class Main{
         Boolean x = true;
         for (OVChipkaart kaart : kaarten) {
             if (kaart.getKaartNummer() == 99999) {
+                System.out.println("nog steeds.\n");
+                x = false;
+            }
+        }
+        if (x) {
+            System.out.println("niet meer.\n");
+        }
+    }
+
+    private static void testProducten(ProductDAO pdao) {
+        System.out.println("\n---------- Test ProductDAO -------------");
+
+        // Haal alle producten op uit de database
+        List<Product> producten = pdao.findAll();
+        System.out.println("[Test] ProductDAO.findAll() geeft de volgende producten:");
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+        System.out.println();
+
+        // Maak een nieuw product aan en persisteer deze in de database
+        Product p1 = new Product(77, "testProduct", "beschrijving", 19.00);
+        System.out.print("[Test] Eerst " + producten.size() + " reizigers, na ReizigerDAO.save() ");
+        pdao.save(p1);
+        producten = pdao.findAll();
+        System.out.println(producten.size() + " reizigers\n");
+
+        // Update een bestaand product + vindt product met nummer
+        Product p1Update = new Product(77, "testProduct", "beschrijving", 15.00);
+        try {
+            System.out.print("[Test] Prijs is eerst " + pdao.findByNummer(77).getPrijs() + ". Prijs is na ProductDAO.update ");
+            pdao.update(p1Update);
+            System.out.println(pdao.findByNummer(77).getPrijs() + "\n");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Delete product
+        producten = pdao.findAll();
+        for (Product product : producten) {
+            if (product.getNummer() == 77) {
+                System.out.print("[Test] Voor het verwijderen zit "+ product.getNaam() + " in de database, na het verwijderen ");
+            }
+        }
+
+        pdao.delete(p1Update);
+
+        producten = pdao.findAll();
+        Boolean x = true;
+        for (Product product : producten) {
+            if (product.getNummer() == 77) {
                 System.out.println("nog steeds.\n");
                 x = false;
             }

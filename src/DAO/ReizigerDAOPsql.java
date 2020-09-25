@@ -1,6 +1,8 @@
 package DAO;
 
-import Domein.OVChipkaart;
+import DAOInterfaces.AdresDAO;
+import DAOInterfaces.OVChipkaartDAO;
+import DAOInterfaces.ReizigerDAO;
 import Domein.Reiziger;
 
 import java.sql.Connection;

@@ -1,5 +1,7 @@
 package DAO;
 
+import DAOInterfaces.AdresDAO;
+import DAOInterfaces.ReizigerDAO;
 import Domein.Adres;
 import Domein.Reiziger;
 
@@ -10,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdresDAOPsql implements AdresDAO{
+public class AdresDAOPsql implements AdresDAO {
     private Connection conn;
     private ReizigerDAO rdao;
 

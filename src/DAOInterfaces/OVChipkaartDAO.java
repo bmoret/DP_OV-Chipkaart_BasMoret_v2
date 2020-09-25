@@ -1,4 +1,4 @@
-package DAO;
+package DAOInterfaces;
 
 import Domein.OVChipkaart;
 import Domein.Reiziger;

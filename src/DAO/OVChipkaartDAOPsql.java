@@ -1,5 +1,8 @@
 package DAO;
 
+import DAOInterfaces.OVChipkaartDAO;
+import DAOInterfaces.ProductDAO;
+import DAOInterfaces.ReizigerDAO;
 import Domein.OVChipkaart;
 import Domein.Product;
 import Domein.Reiziger;
@@ -135,21 +138,8 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
                     System.out.println(rs.getInt("reiziger_id"));
                     throw new Exception("More than one card listed at id");
                 }
-                try {
-                    String q2 = "SELECT * FROM ov_chipkaart_product WHERE kaart_nummer = ?;";
-                    PreparedStatement pst2 = conn.prepareStatement(q2);
-                    pst2.setInt(1, kaartNummer);
-                    ResultSet rs2 = pst2.executeQuery();
-                    List<Product> producten = new ArrayList<>();
-                    while (rs2.next()) {
-                        Product p = pdao.findByNummer(rs2.getInt("product_nummer"));
-                        producten.add(p);
-                    }
-                    k1.setProducten(producten);
-                    return k1;
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
+                k1.setProducten(findProducts(k1));
+                return k1;
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -167,6 +157,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             List<OVChipkaart> lo = new ArrayList<>();
             while (rs.next()) {
                 OVChipkaart k1 = new OVChipkaart(rs.getInt("kaart_nummer"),rs.getDouble("saldo"),rs.getInt("klasse"),java.sql.Date.valueOf(rs.getString("geldig_tot")),reiziger);
+                k1.setProducten(findProducts(k1));
                 lo.add(k1);
             }
             if (lo.isEmpty()) {
@@ -189,5 +180,24 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             }
         }
         return kaarten;
+    }
+
+    private List<Product> findProducts(OVChipkaart kaart) {
+        try {
+            String q2 = "SELECT * FROM ov_chipkaart_product WHERE kaart_nummer = ?;";
+            PreparedStatement pst2 = conn.prepareStatement(q2);
+            pst2.setInt(1, kaart.getKaartNummer());
+            ResultSet rs2 = pst2.executeQuery();
+            List<Product> producten = new ArrayList<>();
+            while (rs2.next()) {
+                Product p = pdao.findByNummer(rs2.getInt("product_nummer"));
+                producten.add(p);
+                p.addOvChipkaart(kaart);
+            }
+            return producten;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

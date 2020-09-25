@@ -71,8 +71,19 @@ public class OVChipkaart {
         this.producten = producten;
     }
 
+    public void addProduct(Product product){
+        if (!producten.contains(product)) {
+            producten.add(product);
+        }
+    }
+
     @Override
     public String toString() {
-        return "OV chipkaart: #"+kaartNummer+", geldig tot: "+geldigTot+", saldo: "+saldo+", klasse: "+klasse;
+        StringBuilder string = new StringBuilder("OV chipkaart: #" + kaartNummer + ", geldig tot: " + geldigTot + ", saldo: " + saldo + ", klasse: " + klasse + ", producten: ");
+        for (Product product : producten) {
+            string.append(product);
+        }
+        return string.toString();
+
     }
 }

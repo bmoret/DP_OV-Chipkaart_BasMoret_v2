@@ -55,4 +55,19 @@ public class Product {
     public void setOvChipkaarten(List<OVChipkaart> ovChipkaarten) {
         this.ovChipkaarten = ovChipkaarten;
     }
+
+    public void addOvChipkaart(OVChipkaart kaart) {
+        if (!ovChipkaarten.contains(kaart)) {
+            ovChipkaarten.add(kaart);
+        }
+    }
+
+    public String toString() {
+        StringBuilder string = new StringBuilder("{" + naam + ": €" + prijs + "}");
+        for (OVChipkaart kaart : ovChipkaarten) {
+            string.append(kaart.getKaartNummer());
+            string.append(" ");
+        }
+        return string.toString();
+    }
 }

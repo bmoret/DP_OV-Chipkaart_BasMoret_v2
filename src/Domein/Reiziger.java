@@ -94,13 +94,13 @@ public class Reiziger {
 
     @Override
     public String toString() {
-        String fullString = "#" + id +
+        StringBuilder fullString = new StringBuilder("#" + id +
                 ": " + getNaam() +
                 " (" + geboortedatum + "), Adres " +
-                adres;
+                adres);
         for (OVChipkaart kaart : kaarten) {
-            fullString += "; " + kaart;
+            fullString.append("; ").append(kaart);
         }
-        return fullString;
+        return fullString.toString();
     }
 }
